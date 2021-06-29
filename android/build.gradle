@@ -1,10 +1,8 @@
-package android
-
 group 'com.tangem.flutter.plugin.tangem_sdk'
 version '1.0-SNAPSHOT'
 
 buildscript {
-  ext.kotlin_version = '1.4.0'
+  ext.kotlin_version = '1.4.31'
   repositories {
     google()
     jcenter()
@@ -18,9 +16,8 @@ buildscript {
 
 rootProject.allprojects {
   repositories {
-    google()
-    jcenter()
     maven { url 'https://jitpack.io' }
+    google()
   }
 }
 
@@ -45,8 +42,9 @@ android {
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-  implementation 'com.github.Tangem.tangem-sdk-android:tangem-core:0.13.0'
-  implementation 'com.github.Tangem.tangem-sdk-android:tangem-sdk:0.13.0'
+  implementation 'com.github.tangem.tangem-sdk-android:tangem-sdk-core:3.1.0'
+  implementation 'com.github.tangem.tangem-sdk-android:tangem-sdk-android:3.1.0'
+
   implementation "com.squareup.sqldelight:android-driver:1.4.0"
 
   implementation 'com.google.code.gson:gson:2.8.6'

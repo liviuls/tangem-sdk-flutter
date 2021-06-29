@@ -5,7 +5,6 @@ import TangemSdk
 public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
     private lazy var sdk: TangemSdk = {
         let sdk = TangemSdk()
-        sdk.config.allowedCardTypes = [.sdk]
         return sdk
     }()
     

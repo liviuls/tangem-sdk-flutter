@@ -56,7 +56,7 @@ public class TangemSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       hiddenLifecycleReference.lifecycle.addObserver(NfcLifecycleObserver(this))
     }
     val cardManagerDelegate = DefaultSessionViewDelegate(nfcManager, nfcManager.reader).apply { this.activity = activity }
-    val config = Config(cardFilter = CardFilter(EnumSet.of(FirmwareType.Sdk)))
+    val config = Config()
     val valueStorage = CardValuesDbStorage(AndroidSqliteDriver(Database.Schema, activity.applicationContext,
         "flutter_cards.db"))
     val keyStorage = TerminalKeysStorage(activity.application)

@@ -19,9 +19,7 @@ class CardResponse {
   List<String> signingMethods;
   String status;
   bool terminalIsLinked;
-  String walletPublicKey;
-  int walletRemainingSignatures;
-  int walletSignedHashes;
+  List<Wallet> wallets;
 
   CardResponse(
       {this.cardData,
@@ -39,9 +37,7 @@ class CardResponse {
       this.signingMethods,
       this.status,
       this.terminalIsLinked,
-      this.walletPublicKey,
-      this.walletRemainingSignatures,
-      this.walletSignedHashes});
+      this.wallets});
 
   factory CardResponse.fromJson(Map<String, dynamic> json) => _$CardResponseFromJson(json);
 
@@ -93,4 +89,23 @@ class CardDataResponse {
   factory CardDataResponse.fromJson(Map<String, dynamic> json) => _$CardDataResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$CardDataResponseToJson(this);
+}
+
+@JsonSerializable()
+class Wallet {
+  Wallet(this.index, this.status, this.publicKey);
+
+  int index;
+  WalletStatus status;
+  String publicKey;
+
+  factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
+  Map<String, dynamic> toJson() => _$WalletToJson(this);
+}
+
+enum WalletStatus {
+  @JsonValue('Loaded')
+  loaded,
+  @JsonValue('Empty')
+  empty,
 }

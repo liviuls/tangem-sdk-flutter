@@ -34,6 +34,7 @@ class _CommandListWidgetState extends State<CommandListWidget> {
 
   Callback _callback;
   String _cardId;
+  String _walletPublicKey;
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _CommandListWidgetState extends State<CommandListWidget> {
     _callback = Callback((success) {
       if (success is CardResponse) {
         _cardId = success.cardId;
+        _walletPublicKey = success.wallets[0].publicKey;
       }
       final prettyJson = _jsonEncoder.convert(success.toJson());
       prettyJson.split("\n").forEach((element) => print(element));
@@ -121,7 +123,7 @@ class _CommandListWidgetState extends State<CommandListWidget> {
     final listOfData = List.generate(_utils.randomInt(1, 10), (index) => _utils.randomString(20));
     final hashes = listOfData.map((e) => e.toHexString()).toList();
 
-    TangemSdk.sign(_callback, hashes, {TangemSdk.cid: _cardId});
+    TangemSdk.sign(_callback, _walletPublicKey, hashes, {TangemSdk.cid: _cardId});
   }
 
   handleReadIssuerData() {

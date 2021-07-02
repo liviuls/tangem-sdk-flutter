@@ -4,12 +4,9 @@ part 'other_responses.g.dart';
 
 @JsonSerializable(nullable: false)
 class SignResponse {
-  String cardId;
-  String signature;
-  int walletRemainingSignatures;
-  int walletSignedHashes;
+  List<String> signatures;
 
-  SignResponse({this.cardId, this.signature, this.walletRemainingSignatures, this.walletSignedHashes});
+  SignResponse(this.signatures);
 
   factory SignResponse.fromJson(Map<String, dynamic> json) => _$SignResponseFromJson(json);
 
@@ -231,7 +228,8 @@ class ChangeFilesSettingsResponse {
 
   ChangeFilesSettingsResponse(this.cardId);
 
-  factory ChangeFilesSettingsResponse.fromJson(Map<String, dynamic> json) => _$ChangeFilesSettingsResponseFromJson(json);
+  factory ChangeFilesSettingsResponse.fromJson(Map<String, dynamic> json) =>
+      _$ChangeFilesSettingsResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChangeFilesSettingsResponseToJson(this);
 }

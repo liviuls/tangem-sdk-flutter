@@ -37,6 +37,7 @@ class TangemSdk {
 
   static const isAllowedOnlyDebugCards = "isAllowedOnlyDebugCards";
   static const cid = "cid";
+  static const walletPublicKey = "walletPublicKey";
   static const initialMessage = "initialMessage";
   static const initialMessageHeader = "header";
   static const initialMessageBody = "body";
@@ -104,7 +105,13 @@ class TangemSdk {
         .catchError((error) => _sendBackError(callback, error));
   }
 
-  static Future sign(Callback callback, List<String> hashesHex, [Map<String, dynamic> valuesToExport]) async {
+  static Future sign(
+    Callback callback,
+    String walletPublicKeyHex,
+    List<String> hashesHex, [
+    Map<String, dynamic> valuesToExport,
+  ]) async {
+    valuesToExport[walletPublicKey] = walletPublicKeyHex;
     valuesToExport[hashes] = hashesHex;
     _channel
         .invokeMethod(cSign, valuesToExport)

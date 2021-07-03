@@ -9,6 +9,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.tangem.*
+import com.tangem.commands.*
 import com.tangem.commands.common.ResponseConverter
 import com.tangem.commands.common.card.FirmwareType
 import com.tangem.commands.file.FileData
@@ -86,6 +87,7 @@ public class TangemSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         when (call.method) {
             "allowsOnlyDebugCards" -> allowsOnlyDebugCards(call, result)
             "scanCard" -> scanCard(call, result)
+            "checkPin" -> checkPin(call, result)
             "sign" -> sign(call, result)
             "personalize" -> personalize(call, result)
             "depersonalize" -> depersonalize(call, result)
@@ -113,6 +115,14 @@ public class TangemSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private fun scanCard(call: MethodCall, result: Result) {
         try {
             sdk.scanCard(message(call)) { handleResult(result, it) }
+        } catch (ex: Exception) {
+            handleException(result, ex)
+        }
+    }
+
+    private fun checkPin(call: MethodCall, result: Result) {
+        try {
+            sdk.startSessionWithRunnable(CheckPinCommand(), cid(call)) { handleResult(result, it) }
         } catch (ex: Exception) {
             handleException(result, ex)
         }

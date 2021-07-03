@@ -233,3 +233,13 @@ class ChangeFilesSettingsResponse {
 
   Map<String, dynamic> toJson() => _$ChangeFilesSettingsResponseToJson(this);
 }
+
+@JsonSerializable()
+class CheckPinResponse {
+  CheckPinResponse(this.isPin2Default);
+
+  bool isPin2Default;
+
+  factory CheckPinResponse.fromJson(Map<String, dynamic> json) => _$CheckPinResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$CheckPinResponseToJson(this);
+}

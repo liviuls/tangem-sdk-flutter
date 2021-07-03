@@ -34,6 +34,7 @@ class TangemSdk {
   static const cDeleteFiles = 'deleteFiles';
   static const cChangeFilesSettings = 'changeFilesSettings';
   static const cPrepareHashes = "prepareHashes";
+  static const cCheckPin = "checkPin";
 
   static const isAllowedOnlyDebugCards = "isAllowedOnlyDebugCards";
   static const cid = "cid";
@@ -102,6 +103,13 @@ class TangemSdk {
     _channel
         .invokeMethod(cScanCard, valuesToExport)
         .then((result) => callback.onSuccess(_createResponse(cScanCard, result)))
+        .catchError((error) => _sendBackError(callback, error));
+  }
+
+  static Future checkPin(Callback callback, [Map<String, dynamic> valuesToExport]) async {
+    _channel
+        .invokeMethod(cCheckPin, valuesToExport)
+        .then((result) => callback.onSuccess(_createResponse(cCheckPin, result)))
         .catchError((error) => _sendBackError(callback, error));
   }
 
@@ -305,6 +313,8 @@ class TangemSdk {
         return ChangeFilesSettingsResponse.fromJson(jsonResponse);
       case cPrepareHashes:
         return FileHashDataHex.fromJson(jsonResponse);
+      case cCheckPin:
+        return CheckPinResponse.fromJson(jsonResponse);
     }
     return response;
   }

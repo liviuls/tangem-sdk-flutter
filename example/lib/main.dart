@@ -68,6 +68,12 @@ class _CommandListWidgetState extends State<CommandListWidget> {
           RowActions(
             [
               ActionButton(text: "Scan card", action: handleScanCard),
+              ActionButton(text: "Check pin", action: handleCheckPin),
+            ],
+          ),
+          ActionType("Signing"),
+          RowActions(
+            [
               ActionButton(text: "Sign", action: handleSign),
             ],
           ),
@@ -117,6 +123,10 @@ class _CommandListWidgetState extends State<CommandListWidget> {
 
   handleScanCard() {
     TangemSdk.scanCard(_callback);
+  }
+
+  handleCheckPin() {
+    TangemSdk.checkPin(_callback, {TangemSdk.cid: _cardId});
   }
 
   handleSign() {

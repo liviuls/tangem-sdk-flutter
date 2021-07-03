@@ -304,3 +304,14 @@ Map<String, dynamic> _$ChangeFilesSettingsResponseToJson(
     <String, dynamic>{
       'cardId': instance.cardId,
     };
+
+CheckPinResponse _$CheckPinResponseFromJson(Map<String, dynamic> json) {
+  return CheckPinResponse(
+    json['isPin2Default'] as bool,
+  );
+}
+
+Map<String, dynamic> _$CheckPinResponseToJson(CheckPinResponse instance) =>
+    <String, dynamic>{
+      'isPin2Default': instance.isPin2Default,
+    };

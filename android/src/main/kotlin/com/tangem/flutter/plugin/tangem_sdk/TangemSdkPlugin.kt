@@ -130,9 +130,7 @@ public class TangemSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun sign(call: MethodCall, result: Result) {
         try {
-            val walletPublicKey = walletPublicKey(call)
-
-            sdk.sign(hashes(call), walletPublicKey, cid(call), message(call)) {
+            sdk.sign(hashes(call), walletPublicKey(call), cid(call), message(call)) {
                 if (it is CompletionResult.Success) {
                     handleResult(result, CompletionResult.Success(SignResponse(it.data.map { byteArray -> byteArray.toHexString() })))
                 } else {

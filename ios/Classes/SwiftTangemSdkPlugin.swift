@@ -20,6 +20,8 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
             switch call.method {
             case "scanCard":
                 try scanCard(call.arguments, result)
+            case "checkPin":
+                try checkPin(call.arguments, result)
             case "sign":
                 try sign(call.arguments, result)
             case "personalize":
@@ -54,10 +56,10 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
                 try prepareHashes(call.arguments, result)
 //            case "writeFiles":
 //                try writeFiles(call.arguments, result)
-            case "readFiles":
-                try readFiles(call.arguments, result)
-            case "deleteFiles":
-                try deleteFiles(call.arguments, result)
+//            case "readFiles":
+//                try readFiles(call.arguments, result)
+//            case "deleteFiles":
+//                try deleteFiles(call.arguments, result)
 //            case "changeFilesSettings":
 //                try changeFilesSettings(call.arguments, result)
             default:
@@ -71,10 +73,8 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
     }
     
     private func scanCard(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        sdk.scanCard(onlineVerification: false,
-                     walletIndex: nil,
-                     initialMessage: try getArgOptional(.initialMessage, from: args),
-                     pin1: try getArgOptional(.pin1, from: args)) { [weak self] result in
+        sdk.scanCard(initialMessage: try getArgOptional(.initialMessage, from: args)
+        ) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
@@ -84,11 +84,9 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
          let hashes = hexHashes.compactMap({Data(hexString: $0)})
         
         sdk.sign(hashes: hashes,
+                 walletPublicKey: try getArg(.walletPublicKey, from: args),
                  cardId: try getArgOptional(.cid, from: args),
-                 initialMessage: try getArgOptional(.initialMessage, from: args),
-                 pin1: try getArgOptional(.pin1, from: args),
-                 pin2: try getArgOptional(.pin2, from: args)
-        ) { [weak self] result in
+                 initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
@@ -110,86 +108,77 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
     }
     
     private func createWallet(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        sdk.createWallet(cardId: try getArgOptional(.cid, from: args),
-                         initialMessage: try getArgOptional(.initialMessage, from: args),
-                         pin1: try getArgOptional(.pin1, from: args),
-                         pin2: try getArgOptional(.pin2, from: args)) { [weak self] result in
+        sdk.createWallet(config: nil,
+                         cardId: try getArgOptional(.cid, from: args),
+                         initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
     
     private func purgeWallet(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        sdk.purgeWallet(cardId: try getArgOptional(.cid, from: args),
-                        initialMessage: try getArgOptional(.initialMessage, from: args),
-                        pin1: try getArgOptional(.pin1, from: args),
-                        pin2: try getArgOptional(.pin2, from: args)) { [weak self] result in
+        sdk.purgeWallet(walletPublicKey: try getArg(.walletPublicKey, from: args),
+                        cardId: try getArgOptional(.cid, from: args),
+                        initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
     
     private func readIssuerData(_ args: Any?, _ completion: @escaping FlutterResult) throws {
         sdk.readIssuerData(cardId: try getArgOptional(.cid, from: args),
-                           initialMessage: try getArgOptional(.initialMessage, from: args),
-                           pin1: try getArgOptional(.pin1, from: args)) { [weak self] result in
+                           initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
     
     private func writeIssuerData(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        sdk.writeIssuerData(cardId: try getArg(.cid, from: args),
-                            issuerData: try getArg(.issuerData, from: args),
+        sdk.writeIssuerData(issuerData: try getArg(.issuerData, from: args),
                             issuerDataSignature: try getArg(.issuerDataSignature, from: args),
                             issuerDataCounter: try getArgOptional(.issuerDataCounter, from: args),
-                            initialMessage: try getArgOptional(.initialMessage, from: args),
-                            pin1: try getArgOptional(.pin1, from: args)) { [weak self] result in
+                            cardId: try getArgOptional(.cid, from: args),
+                            initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
     
     private func readIssuerExData(_ args: Any?, _ completion: @escaping FlutterResult) throws {
         sdk.readIssuerExtraData(cardId: try getArgOptional(.cid, from: args),
-                                initialMessage: try getArgOptional(.initialMessage, from: args),
-                                pin1: try getArgOptional(.pin1, from: args)) { [weak self] result in
+                                initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
     
     private func writeIssuerExData(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        sdk.writeIssuerExtraData(cardId: try getArg(.cid, from: args),
-                                 issuerData: try getArg(.issuerData, from: args),
+        sdk.writeIssuerExtraData(issuerData: try getArg(.issuerData, from: args),
                                  startingSignature: try getArg(.startingSignature, from: args),
                                  finalizingSignature: try getArg(.finalizingSignature, from: args),
                                  issuerDataCounter: try getArgOptional(.issuerDataCounter, from: args),
-                                 initialMessage: try getArgOptional(.initialMessage, from: args),
-                                 pin1: try getArgOptional(.pin1, from: args)){ [weak self] result in
+                                 cardId: try getArg(.cid, from: args),
+                                 initialMessage: try getArgOptional(.initialMessage, from: args)){ [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
     
     private func readUserData(_ args: Any?, _ completion: @escaping FlutterResult) throws {
         sdk.readUserData(cardId: try getArgOptional(.cid, from: args),
-                         initialMessage: try getArgOptional(.initialMessage, from: args),
-                         pin1: try getArgOptional(.pin1, from: args)) { [weak self] result in
+                         initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
     
     private func writeUserData(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        sdk.writeUserData(cardId: try getArgOptional(.cid, from: args),
-                          userData: try getArg(.userData, from: args),
+        sdk.writeUserData(userData: try getArg(.userData, from: args),
                           userCounter: try getArgOptional(.userCounter, from: args),
-                          initialMessage: try getArgOptional(.initialMessage, from: args),
-                          pin1: try getArgOptional(.pin1, from: args)){ [weak self] result in
+                          cardId: try getArgOptional(.cid, from: args),
+                          initialMessage: try getArgOptional(.initialMessage, from: args)){ [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
     
     private func writeUserProtectedData(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        sdk.writeUserProtectedData(cardId: try getArgOptional(.cid, from: args),
-                                   userProtectedData: try getArg(.userProtectedData, from: args),
+        sdk.writeUserProtectedData(userProtectedData: try getArg(.userProtectedData, from: args),
                                    userProtectedCounter: try getArgOptional(.userProtectedCounter, from: args),
-                                   initialMessage: try getArgOptional(.initialMessage, from: args),
-                                   pin1: try getArgOptional(.pin1, from: args)) { [weak self] result in
+                                   cardId: try getArgOptional(.cid, from: args),
+                                   initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
@@ -197,8 +186,8 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
     private func setPin1(_ args: Any?, _ completion: @escaping FlutterResult) throws {
         let pin: String? = try getArgOptional(.pinCode, from: args)
         
-        sdk.changePin1(cardId: try getArgOptional(.cid, from: args),
-                       pin: pin?.sha256(),
+        sdk.changePin1(pin: pin?.sha256(),
+                       cardId: try getArgOptional(.cid, from: args),
                        initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
@@ -207,8 +196,8 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
     private func setPin2(_ args: Any?, _ completion: @escaping FlutterResult) throws {
         let pin: String? = try getArgOptional(.pinCode, from: args)
         
-        sdk.changePin2(cardId: try getArgOptional(.cid, from: args),
-                       pin: pin?.sha256(),
+        sdk.changePin2(pin: pin?.sha256(),
+                       cardId: try getArgOptional(.cid, from: args),
                        initialMessage: try getArgOptional(.initialMessage, from: args)) { [weak self] result in
             self?.handleCompletion(result, completion)
         }
@@ -228,18 +217,27 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
         completion(hashes.description)
     }
     
-    private func readFiles(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        let readPrivateFiles: Bool = try getArgOptional(.readPrivateFiles, from: args) ?? false
-        //let indices: [Int] = try getArg(.indices, from: args)
-        
-        sdk.readFiles(cardId: try getArgOptional(.cid, from: args),
-                      initialMessage: try getArgOptional(.initialMessage, from: args),
-                      pin1: try getArgOptional(.pin1, from: args),
-                      pin2: try getArgOptional(.pin2, from: args),
-                      readSettings: ReadFilesTaskSettings(readPrivateFiles: readPrivateFiles)) { [weak self] result in
+    private func checkPin(_ args: Any?, _ completion: @escaping FlutterResult) throws {
+        sdk.startSession(with: CheckPinCommand(),
+                         cardId: try getArg(.cid, from: args),
+                         initialMessage: try getArgOptional(.initialMessage, from: args)) {
+            [weak self] result in
             self?.handleCompletion(result, completion)
         }
     }
+    
+//    private func readFiles(_ args: Any?, _ completion: @escaping FlutterResult) throws {
+//        let readPrivateFiles: Bool = try getArgOptional(.readPrivateFiles, from: args) ?? false
+//        //let indices: [Int] = try getArg(.indices, from: args)
+//
+//        sdk.readFiles(cardId: try getArgOptional(.cid, from: args),
+//                      initialMessage: try getArgOptional(.initialMessage, from: args),
+//                      pin1: try getArgOptional(.pin1, from: args),
+//                      pin2: try getArgOptional(.pin2, from: args),
+//                      readSettings: ReadFilesTaskSettings(readPrivateFiles: readPrivateFiles)) { [weak self] result in
+//            self?.handleCompletion(result, completion)
+//        }
+//    }
     
 //    private func writeFiles(_ args: Any?, _ completion: @escaping FlutterResult) throws {
 //        sdk.writeFiles(cardId: try getArgOptional(.cid, from: args),
@@ -262,15 +260,15 @@ public class SwiftTangemSdkPlugin: NSObject, FlutterPlugin {
 //        }
 //    }
     
-    private func deleteFiles(_ args: Any?, _ completion: @escaping FlutterResult) throws {
-        sdk.deleteFiles(cardId: try getArgOptional(.cid, from: args),
-                        initialMessage: try getArgOptional(.initialMessage, from: args),
-                        pin1: try getArgOptional(.pin1, from: args),
-                        pin2: try getArgOptional(.pin2, from: args),
-                        indicesToDelete: try getArgOptional(.indices, from: args)) { [weak self] result in
-            self?.handleCompletion(result, completion)
-        }
-    }
+//    private func deleteFiles(_ args: Any?, _ completion: @escaping FlutterResult) throws {
+//        sdk.deleteFiles(cardId: try getArgOptional(.cid, from: args),
+//                        initialMessage: try getArgOptional(.initialMessage, from: args),
+//                        pin1: try getArgOptional(.pin1, from: args),
+//                        pin2: try getArgOptional(.pin2, from: args),
+//                        indicesToDelete: try getArgOptional(.indices, from: args)) { [weak self] result in
+//            self?.handleCompletion(result, completion)
+//        }
+//    }
     
     private func handleCompletion<TResult: JSONStringConvertible>(_ sdkResult: Result<TResult, TangemSdkError>, _ completion: @escaping FlutterResult) {
         switch sdkResult {
@@ -408,4 +406,5 @@ fileprivate enum ArgKey: String {
     case privateKey
     case readPrivateFiles
     case indices
+    case walletPublicKey
 }
